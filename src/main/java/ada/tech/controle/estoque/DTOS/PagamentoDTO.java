@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class CompraDTO {
+public class PagamentoDTO {
     private String id_compra;
     private String id_cliente;
-    private List<ada.tech.controle.estoque.DTOS.ItemRequest> itens = new ArrayList<>();
-    private ada.tech.controle.estoque.DTOS.EnvioRequest envio;
+    private List<ItemRequest> itens = new ArrayList<>();
+    private EnvioRequest envio;
 
     @JsonCreator
-    public CompraDTO(@JsonProperty("id_compra") String id_compra,
-                     @JsonProperty("id_cliente") String id_cliente,
-                     @JsonProperty("itens") List<ada.tech.controle.estoque.DTOS.ItemRequest> itens,
-                     @JsonProperty("envio") ada.tech.controle.estoque.DTOS.EnvioRequest envio
+    public PagamentoDTO(@JsonProperty("id_compra") String id_compra,
+                        @JsonProperty("id_cliente") String id_cliente,
+                        @JsonProperty("itens") List<ItemRequest> itens,
+                        @JsonProperty("envio") EnvioRequest envio
     ) {
         this.id_compra = Objects.requireNonNull(id_compra);
         this.id_cliente = Objects.requireNonNull(id_cliente);

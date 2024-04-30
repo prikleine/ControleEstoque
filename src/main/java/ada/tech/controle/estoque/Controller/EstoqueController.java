@@ -1,7 +1,6 @@
 package ada.tech.controle.estoque.Controller;
 
-import ada.tech.controle.estoque.DTOS.CompraDTO;
-import ada.tech.controle.estoque.DTOS.ItemRequest;
+import ada.tech.controle.estoque.DTOS.PagamentoDTO;
 import ada.tech.controle.estoque.Service.ItemEstoqueServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,10 +24,14 @@ public class EstoqueController {
     }
 
     @PostMapping
-    public ResponseEntity removerItensEstoque(@RequestBody @Valid CompraDTO request) {
+    public ResponseEntity removerItensEstoque(@RequestBody @Valid PagamentoDTO request) {
+        boolean disponivel = serviceItemEstoque.disponivel(request.getItens());
 
-        for(ItemRequest item: request.getItens()) {
-            serviceItemEstoque.saveOne(item);
+        if (disponivel) {
+            serviceItemEstoque.remove(request.getItens());
+            // Manda msg de sucesso no RABBIT
+        } else {
+            // Manda msg de erro no RABBIT
         }
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ArrayList<>());

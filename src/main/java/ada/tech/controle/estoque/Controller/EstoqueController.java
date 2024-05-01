@@ -1,5 +1,6 @@
 package ada.tech.controle.estoque.Controller;
 
+import ada.tech.controle.estoque.ControleEstoqueApplication;
 import ada.tech.controle.estoque.DTOS.PagamentoDTO;
 import ada.tech.controle.estoque.Service.ItemEstoqueServiceImpl;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 import java.util.ArrayList;
 
 @Validated
@@ -18,9 +21,12 @@ import java.util.ArrayList;
 @RequestMapping("/items")
 public class EstoqueController {
     private final ItemEstoqueServiceImpl serviceItemEstoque;
+    private final RabbitTemplate rabbitTemplate;
 
-    public EstoqueController(ItemEstoqueServiceImpl serviceItemEstoque) {
+    public EstoqueController(ItemEstoqueServiceImpl serviceItemEstoque, RabbitTemplate rabbitTemplate) {
         this.serviceItemEstoque = serviceItemEstoque;
+        this.rabbitTemplate=rabbitTemplate;
+
     }
 
     @PostMapping
@@ -29,9 +35,12 @@ public class EstoqueController {
 
         if (disponivel) {
             serviceItemEstoque.remove(request.getItens());
-            // Manda msg de sucesso no RABBIT
+            // Manda msg de sucesso para serviço envio
         } else {
-            // Manda msg de erro no RABBIT
+            rabbitTemplate.convertAndSend(
+                    "Informar-Erro-Estoque",
+                    "informar-erro-estoque",
+                    "Mensagem Teste");
         }
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ArrayList<>());
